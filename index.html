@@ -26,21 +26,11 @@
       text-align: center;
     }
 
-    .input-section,
-    .output-section {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    input, select, button {
+    label, input, select, button {
       width: 100%;
       padding: 8px;
-      box-sizing: border-box;
       margin-bottom: 10px;
+      box-sizing: border-box;
     }
 
     .equals-sign {
@@ -70,63 +60,78 @@
 <body>
 
 <div class="length-calculator">
-  <div class="input-section">
-    <label for="lengthValue">Length:</label>
-    <input id="lengthValue" type="number" value="" spellcheck="false">
-    <select id="fromUnit">
-      <option value="km">Kilometre</option>
-      <option value="m">Meter</option>
-      <option value="cm">Centimeter</option>
-      <option value="mm" selected="selected">Millimetre</option>
-      <option value="microm">Micrometre</option>
-      <option value="nm">Nanometre</option>
-      <option value="mile">Mile</option>
-      <option value="yard">Yard</option>
-      <option value="foot">Foot</option>
-      <option value="inch">Inch</option>
-      <option value="nauticalMile">Nautical Mile</option>
-      <option value="au">Astronomical Unit</option>
-    </select>
-  </div>
+  <label for="lengthValue">Length:</label>
+  <input id="lengthValue" type="number" value="" spellcheck="false">
+  <select id="fromUnit">
+    <option value="km">Kilometre</option>
+    <option value="m">Meter</option>
+    <option value="cm">Centimeter</option>
+    <option value="mm">Millimetre</option>
+    <option value="microm">Micrometre</option>
+    <option value="nm">Nanometre</option>
+    <option value="angstrom">Angstrom</option>
+    <option value="mile">Mile</option>
+    <option value="yard">Yard</option>
+    <option value="foot">Foot</option>
+    <option value="inch">Inch</option>
+    <option value="nauticalMile">Nautical Mile</option>
+    <option value="au">Astronomical Unit</option>
+    <option value="lightyear">Light-Year</option>
+    <option value="parsec">Parsec</option>
+    <option value="furlong">Furlong</option>
+    <option value="chain">Chain</option>
+    <option value="league">League</option>
+    <option value="fathom">Fathom</option>
+    <option value="planck">Planck Length</option>
+  </select>
 
   <div class="equals-sign">=</div>
 
-  <div class="output-section">
-    <input id="result" type="number" value="0" readonly>
-    <select id="toUnit">
-      <option value="km">Kilometre</option>
-      <option value="m">Meter</option>
-      <option value="cm">Centimeter</option>
-      <option value="mm">Millimetre</option>
-      <option value="microm">Micrometre</option>
-      <option value="nm">Nanometre</option>
-      <option value="mile">Mile</option>
-      <option value="yard">Yard</option>
-      <option value="foot">Foot</option>
-      <option value="inch">Inch</option>
-      <option value="nauticalMile">Nautical Mile</option>
-      <option value="au">Astronomical Unit</option>
-    </select>
-  </div>
+  <input id="result" type="text" value="0" readonly>
+  <select id="toUnit">
+    <option value="km">Kilometre</option>
+    <option value="m">Meter</option>
+    <option value="cm">Centimeter</option>
+    <option value="mm">Millimetre</option>
+    <option value="microm">Micrometre</option>
+    <option value="nm">Nanometre</option>
+    <option value="angstrom">Angstrom</option>
+    <option value="mile">Mile</option>
+    <option value="yard">Yard</option>
+    <option value="foot">Foot</option>
+    <option value="inch">Inch</option>
+    <option value="nauticalMile">Nautical Mile</option>
+    <option value="au">Astronomical Unit</option>
+    <option value="lightyear">Light-Year</option>
+    <option value="parsec">Parsec</option>
+    <option value="furlong">Furlong</option>
+    <option value="chain">Chain</option>
+    <option value="league">League</option>
+    <option value="fathom">Fathom</option>
+    <option value="planck">Planck Length</option>
+  </select>
 
   <button class="convert-btn" onclick="calculateLength()">Convert</button>
 </div>
 
 <script>
   const conversionFactors = {
-    km: 1e3,
-    m: 1,
-    cm: 1e-2,
-    mm: 1e-3,
-    microm: 1e-6,
-    nm: 1e-9,
-    mile: 1609.344,
-    yard: 0.9144,
-    foot: 0.3048,
-    inch: 0.0254,
-    nauticalMile: 1852,
-    au: 1.496e+11 // Astronomical unit in meters
+    km: 1e3, m: 1, cm: 1e-2, mm: 1e-3, microm: 1e-6, nm: 1e-9, angstrom: 1e-10,
+    mile: 1609.344, yard: 0.9144, foot: 0.3048, inch: 0.0254, nauticalMile: 1852,
+    au: 1.496e+11, lightyear: 9.461e+15, parsec: 3.086e+16,
+    furlong: 201.168, chain: 20.1168, league: 4828.032, fathom: 1.8288,
+    planck: 1.616e-35
   };
+
+  function formatNumber(num) {
+    if (num === 0) return "0";
+    const exponent = Math.floor(Math.log10(Math.abs(num)));
+    if (exponent >= 6 || exponent <= -6) {
+      const coefficient = (num / Math.pow(10, exponent)).toFixed(2);
+      return `${coefficient} × 10<sup>${exponent}</sup>`;
+    }
+    return num.toFixed(10).replace(/\.?0+$/, ""); // Remove trailing zeros
+  }
 
   function calculateLength() {
     const lengthValue = parseFloat(document.getElementById('lengthValue').value);
@@ -140,7 +145,7 @@
 
     const result = (lengthValue * conversionFactors[fromUnit]) / conversionFactors[toUnit];
 
-    document.getElementById('result').value = result.toFixed(6);
+    document.getElementById('result').innerHTML = formatNumber(result);
   }
 </script>
 
