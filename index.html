@@ -22,13 +22,12 @@
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       padding: 20px;
-      width: 300px;
+      width: 320px;
       text-align: center;
     }
 
     .input-section,
-    .output-section,
-    .formula-section {
+    .output-section {
       margin-bottom: 15px;
     }
 
@@ -37,8 +36,7 @@
       margin-bottom: 5px;
     }
 
-    input,
-    select {
+    input, select, button {
       width: 100%;
       padding: 8px;
       box-sizing: border-box;
@@ -55,11 +53,17 @@
       font-weight: bold;
     }
 
-    .formula,
-    .calculation,
-    .conversion-factor {
-      color: #555;
-      font-size: 14px;
+    .convert-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .convert-btn:hover {
+      background-color: #218838;
     }
   </style>
 </head>
@@ -74,138 +78,70 @@
       <option value="m">Meter</option>
       <option value="cm">Centimeter</option>
       <option value="mm" selected="selected">Millimetre</option>
-      <option value="microm">Micrometres</option>
+      <option value="microm">Micrometre</option>
       <option value="nm">Nanometre</option>
       <option value="mile">Mile</option>
       <option value="yard">Yard</option>
       <option value="foot">Foot</option>
       <option value="inch">Inch</option>
-      <option value="nauticalMile">Nautical mile</option>
-      <option value="austronomicalunit">astronomical unit</option>
-      <!-- Add other length units here -->
+      <option value="nauticalMile">Nautical Mile</option>
+      <option value="au">Astronomical Unit</option>
     </select>
   </div>
 
   <div class="equals-sign">=</div>
 
   <div class="output-section">
-    <input id="result" type="number" value="0.905512" readonly>
+    <input id="result" type="number" value="0" readonly>
     <select id="toUnit">
       <option value="km">Kilometre</option>
       <option value="m">Meter</option>
       <option value="cm">Centimeter</option>
       <option value="mm">Millimetre</option>
-      <option value="microm">Micrometres</option>
+      <option value="microm">Micrometre</option>
       <option value="nm">Nanometre</option>
       <option value="mile">Mile</option>
       <option value="yard">Yard</option>
       <option value="foot">Foot</option>
       <option value="inch">Inch</option>
-      <option value="nauticalMile">Nautical mile</option>
-      <option value="austronomicalunit">astronomical unit</option>
-      <!-- Add other length units here -->
+      <option value="nauticalMile">Nautical Mile</option>
+      <option value="au">Astronomical Unit</option>
     </select>
   </div>
-   <script>
-  // Function to perform length conversion
+
+  <button class="convert-btn" onclick="calculateLength()">Convert</button>
+</div>
+
+<script>
+  const conversionFactors = {
+    km: 1e3,
+    m: 1,
+    cm: 1e-2,
+    mm: 1e-3,
+    microm: 1e-6,
+    nm: 1e-9,
+    mile: 1609.344,
+    yard: 0.9144,
+    foot: 0.3048,
+    inch: 0.0254,
+    nauticalMile: 1852,
+    au: 1.496e+11 // Astronomical unit in meters
+  };
+
   function calculateLength() {
-    // Get input values
     const lengthValue = parseFloat(document.getElementById('lengthValue').value);
     const fromUnit = document.getElementById('fromUnit').value;
     const toUnit = document.getElementById('toUnit').value;
 
-    // Perform conversion
-    let result;
-    switch (fromUnit) {
-      case 'km':
-        result = lengthValue * 1000000;
-        break;
-      case 'm':
-        result = lengthValue * 1000;
-        break;
-      case 'cm':
-        result = lengthValue * 10;
-        break;
-      case 'mm':
-        result = lengthValue;
-        break;
-      case 'microm':
-        result = lengthValue * 0.001;
-        break;
-      case 'nm':
-        result = lengthValue * 0.000001;
-        break;
-      case 'mile':
-        result = lengthValue * 1609344;
-        break;
-      case 'yard':
-        result = lengthValue * 914.4;
-        break;
-      case 'foot':
-        result = lengthValue * 304.8;
-        break;
-      case 'inch':
-        result = lengthValue * 25.4;
-        break;
-      case 'nauticalMile':
-        result = lengthValue * 1852000;
-        break;
-      // Add cases for other length units here
-      default:
-        result = 0;
+    if (isNaN(lengthValue) || lengthValue < 0) {
+      document.getElementById('result').value = "Invalid";
+      return;
     }
 
-    // Convert to the desired unit
-    switch (toUnit) {
-      case 'km':
-        result /= 1000000;
-        break;
-      case 'm':
-        result /= 1000;
-        break;
-      case 'cm':
-        result /= 10;
-        break;
-      case 'mm':
-        // Already in millimeters
-        break;
-      case 'microm':
-        result /= 0.001;
-        break;
-      case 'nm':
-        result /= 0.000001;
-        break;
-      case 'mile':
-        result /= 1609344;
-        break;
-      case 'yard':
-        result /= 914.4;
-        break;
-      case 'foot':
-        result /= 304.8;
-        break;
-      case 'inch':
-        result /= 25.4;
-        break;
-      case 'nauticalMile':
-        result /= 1852000;
-        break;
-      // Add cases for other length units here
-      default:
-        result = 0;
-    }
+    const result = (lengthValue * conversionFactors[fromUnit]) / conversionFactors[toUnit];
 
-    // Display the result
     document.getElementById('result').value = result.toFixed(6);
   }
-
-  // Attach the calculateLength function to input change events
-  document.getElementById('lengthValue').addEventListener('input', calculateLength);
-  document.getElementById('fromUnit').addEventListener('change', calculateLength);
-  document.getElementById('toUnit').addEventListener('change', calculateLength);
-
-  // Initial calculation
-  calculateLength();
 </script>
 
 </body>
